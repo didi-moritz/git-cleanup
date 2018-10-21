@@ -14,6 +14,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "simple-git": "^1.105.0",
     "terminal-kit": "^1.26.4"
   },
   "devDependencies": {

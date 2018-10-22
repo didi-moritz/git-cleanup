@@ -29,8 +29,12 @@ term.red("Hello, folks!\n");
 term.blue("It is: " + term.width + "x" + term.height + "\n");
 
 git.readLocalRepos().then((result: Branch[]) => {
+    term.blue("Mkay!\n");
     result.forEach((branch: Branch) => {
         term(branch.name);
-        term.red(" " + branch.isCurrent);
+        term.blue("\t" + (branch.isLocal ? "L" : " "));
+        term.green("\t" + (branch.isRemote ? "R" : " "));
+        term.red("\t" + (branch.isCurrent ? "C" : " "));
+        term.nextLine();
     });
 });

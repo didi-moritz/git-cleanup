@@ -1,13 +1,5 @@
 var term = require("terminal-kit").terminal;
 
-term.showBottomMenu = () => {
-    term.showInBottomLine(() => {
-        term.eraseLine();
-        term.bgBrightWhite.brightRed("Q");
-        term.white("uit");
-    });
-};
-
 term.centerText = (termChain: any, text: string) => {
     let startPos: number = Math.floor((term.width - text.length) / 2);
     startPos = startPos < 0 ? 0 : startPos;
@@ -35,6 +27,7 @@ term.showProgess = (percentage: number) => {
 term.showInBottomLine = (displayFunc: () => void) => {
     term.saveCursor();
     term.moveToBottomLine();
+    term.eraseLine();
     displayFunc();
     term.restoreCursor();
 };

@@ -12,6 +12,9 @@ const git: GitHelper = new GitHelper();
 const PROGESS_AFTER_FETCH: number = 10;
 const TITLE: string = "Git Cleanup";
 
+const DELETE_LOCAL_BUTTON: string = "[ † Local ]";
+const DELETE_REMOTE_BUTTON: string = "[ † Remote ]";
+
 let exitAsap: boolean = false;
 
 let branches: Branch[] = [];
@@ -82,6 +85,9 @@ function init(): void {
 }
 
 function showTitle(): void {
+    term.moveTo(1, 1);
+    term.eraseLine();
+
     let textStartPos: number = Math.ceil((term.width - TITLE.length + 1) / 2);
     if (textStartPos < 1) {
         textStartPos = 1;
@@ -102,7 +108,7 @@ function showTitle(): void {
     term.nextLine();
 }
 
-function initControls(): void {
+function initEvents(): void {
     term.grabInput();
 
     term.on('key', function (name: string, matches: any, data: any) {
@@ -139,6 +145,10 @@ function initControls(): void {
             console.log(name);
         }
     });
+
+    term.on("resize", function (width: number, height: number) {
+        refreshTotalDisplay();
+    });
 }
 
 function loadRepositories(): void {
@@ -170,7 +180,7 @@ function loadRepositories(): void {
             sleep(50);
         }
 
-        initControls();
+        initEvents();
         refreshDisplay();
     });
 }
@@ -178,6 +188,11 @@ function loadRepositories(): void {
 function refreshDisplay(): void {
     showBranches();
     showBottomMenu();
+}
+
+function refreshTotalDisplay(): void {
+    showTitle();
+    refreshDisplay();
 }
 
 function showBranches(): void {
@@ -191,10 +206,25 @@ function showBranches(): void {
 }
 
 function showBranch(branch: Branch): void {
-    term(branch.name);
-    term.blue("\t" + (branch.isLocal ? "L" : " "));
-    term.green("\t" + (branch.isRemote ? "R" : " "));
-    term.red("\t" + (branch.isCurrent ? "C" : " "));
+    const maxBranchLengthName: number = term.width
+        - DELETE_LOCAL_BUTTON.length - DELETE_REMOTE_BUTTON.length
+        - 4;
+
+    if (branch.isCurrent) {
+        term.red();
+    }
+    term(branch.name.substr(0, maxBranchLengthName));
+
+    term.styleReset();
+
+    if (branch.isLocal) {
+        term.column.brightBlue(maxBranchLengthName + 2, DELETE_LOCAL_BUTTON);    
+    }
+
+    if (branch.isRemote) {
+        term.column.brightGreen(maxBranchLengthName + DELETE_LOCAL_BUTTON.length + 4, DELETE_REMOTE_BUTTON); 
+    }
+
     term.nextLine();
 }
 
